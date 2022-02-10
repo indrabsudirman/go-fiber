@@ -3,8 +3,8 @@ package handler
 import (
 	"go-fiber/database"
 	"go-fiber/model/entity"
+	"go-fiber/request"
 	"log"
-	"os/user"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -21,22 +21,28 @@ func UserHandlerGetAll(ctx *fiber.Ctx) error {
 
 }
 
-func UserHandlerCreate(ctx *fiber.Ctx) error  {
+func UserHandlerCreate(ctx *fiber.Ctx) error {
 	user := new(request.UserCreateRequest)
 	if err := ctx.BodyParser(user); err != nil {
 		return err
 	}
 
-	newUser := entity.User {
-		Name: user.Name,
-		Email: user.Email,
+	newUser := entity.User{
+		Name:    user.Name,
+		Email:   user.Email,
 		Address: user.Address,
-		Phone: user.Phone,
+		Phone:   user.Phone,
 	}
 
 	errCreateUser := database.DB.Create(&newUser).Error
-	if errCreateUser != {
-		return ctx.Status(500).JSON(fiber.Map) {
-			"message" : "failed to store data"
-		}
+	if errCreateUser != nil {
+		return ctx.Status(500).JSON(fiber.Map{
+			"message": "failed to store data",
+		})
 	}
+
+	return ctx.JSON(fiber.Map{
+		"message": "success",
+		"data":    newUser,
+	})
+}
