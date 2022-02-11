@@ -6,6 +6,7 @@ import (
 	"go-fiber/request"
 	"log"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -25,6 +26,12 @@ func UserHandlerCreate(ctx *fiber.Ctx) error {
 	user := new(request.UserCreateRequest)
 	if err := ctx.BodyParser(user); err != nil {
 		return err
+	}
+
+	validate := validator.New()
+	errValidate := validate.Struct(user)
+	if errValidate != nil {
+		return errValidate
 	}
 
 	newUser := entity.User{
