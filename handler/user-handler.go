@@ -31,7 +31,10 @@ func UserHandlerCreate(ctx *fiber.Ctx) error {
 	validate := validator.New()
 	errValidate := validate.Struct(user)
 	if errValidate != nil {
-		return errValidate
+		return ctx.Status(400).JSON(fiber.Map{
+			"message": "failed",
+			"error":   errValidate.Error(),
+		})
 	}
 
 	newUser := entity.User{
