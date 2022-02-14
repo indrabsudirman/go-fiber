@@ -100,7 +100,7 @@ func UserHandlerUpdate(ctx *fiber.Ctx) error {
 	var user entity.User
 
 	userId := ctx.Params("id")
-	//Check Available User
+	//Check Available User in DB
 	err := database.DB.First(&user, "id = ?", userId).Error
 	if err != nil {
 		return ctx.Status(404).JSON(fiber.Map{
@@ -134,4 +134,28 @@ func UserHandlerUpdate(ctx *fiber.Ctx) error {
 		"data":    user,
 	})
 
+}
+
+func UserHandlerDelete(ctx *fiber.Ctx) error {
+	userId := ctx.Params("id")
+	var user entity.User
+
+	//Available user in DB
+	err := database.DB.Debug().First(&user, "id = ?", userId).Error
+	if err != nil {
+		return ctx.Status(404).JSON(fiber.Map{
+			"message": "user not found",
+		})
+	}
+
+	errDelete := database.DB.Debug().Delete(&user).Error
+	if errDelete != nil {
+		return ctx.Status(500).JSON(fiber.Map{
+			"message": "internal server error",
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message": "user was deleted",
+	})
 }
