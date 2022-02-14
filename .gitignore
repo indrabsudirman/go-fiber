@@ -1,2 +1,3 @@
 .vscode/settings.json
 database/database.go
+config/config.go
