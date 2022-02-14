@@ -108,13 +108,19 @@ func UserHandlerUpdate(ctx *fiber.Ctx) error {
 		})
 	}
 
-	//Update User Data
+	//Update User Data if data not empty
 	if userRequest.Name != "" {
 		user.Name = userRequest.Name
 	}
+	if userRequest.Address != "" {
+		user.Address = userRequest.Address
+	}
+	if userRequest.Phone != "" {
+		user.Phone = userRequest.Phone
+	}
 
-	user.Address = userRequest.Address
-	user.Phone = userRequest.Phone
+	// user.Address = userRequest.Address
+	// user.Phone = userRequest.Phone
 
 	errUpdate := database.DB.Save(&user).Error
 	if errUpdate != nil {
