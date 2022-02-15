@@ -4,6 +4,7 @@ import (
 	"go-fiber/database"
 	"go-fiber/model/entity"
 	"go-fiber/model/request"
+	"go-fiber/utils"
 	"log"
 
 	"github.com/go-playground/validator/v10"
@@ -29,10 +30,20 @@ func LoginHandler(ctx *fiber.Ctx) error {
 		})
 	}
 
+	// Check available user
+
 	var user entity.User
 
 	err := database.DB.First(&user, "email = ?", loginRequest.Email).Error
 	if err != nil {
+		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "wrong credential",
+		})
+	}
+
+	//Check validation password
+	isValid := utils.CheckPasswordHash(user.Password, loginRequest.Password)
+	if !isValid {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"message": "wrong credential",
 		})

@@ -4,6 +4,7 @@ import (
 	"go-fiber/database"
 	"go-fiber/model/entity"
 	"go-fiber/model/request"
+	"go-fiber/utils"
 	"log"
 
 	"github.com/go-playground/validator/v10"
@@ -44,6 +45,16 @@ func UserHandlerCreate(ctx *fiber.Ctx) error {
 		Address: user.Address,
 		Phone:   user.Phone,
 	}
+
+	hashedPassword, err := utils.HashingPassword(user.Password)
+	if err != nil {
+		log.Println(err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"message": "internal server error",
+		})
+	}
+
+	newUser.Password = hashedPassword
 
 	errCreateUser := database.DB.Create(&newUser).Error
 	if errCreateUser != nil {
