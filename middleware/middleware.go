@@ -15,7 +15,9 @@ func Auth(ctx *fiber.Ctx) error {
 		})
 	}
 
-	_, err := utils.VerifyToken(token)
+	// _, err := utils.VerifyToken(token)
+
+	claims, err := utils.DecodeToken(token)
 
 	if err != nil {
 		return ctx.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
@@ -28,6 +30,17 @@ func Auth(ctx *fiber.Ctx) error {
 	// 		"message": "unauthenticated",
 	// 	})
 	// }
+
+	role := claims["role"].(string)
+	if role != "admin" {
+		return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"message": "forbidden access",
+		})
+	}
+
+	//Send to user-handler log userInfo
+	ctx.Locals("userInfo", claims)
+	// ctx.Locals("role", claims["role"])
 
 	return ctx.Next()
 }
