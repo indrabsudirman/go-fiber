@@ -37,3 +37,29 @@ func HandleSingleFile(ctx *fiber.Ctx) error {
 	return ctx.Next()
 
 }
+
+func HandleMultipleFile(ctx *fiber.Ctx) error {
+	form, errForm := ctx.MultipartForm()
+	if errForm != nil {
+		log.Println("Error read multipart form request, error :", errForm)
+	}
+
+	files := form.File["photos"]
+
+	for i, file := range files {
+
+		var fileName string
+		if file != nil {
+			fileName = fmt.Sprintf("%s-%d", &file.Filename, i)
+
+			errSaveFile := ctx.SaveFile(file, fmt.Sprintf(config.ProjectRootPath+"/public/images/%s", fileName))
+			if errSaveFile != nil {
+				log.Println("Failed to store file : ", errSaveFile)
+			}
+		} else {
+			log.Println("nothing file to be upload")
+		}
+	}
+
+	return ctx.Next()
+}
