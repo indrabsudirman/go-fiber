@@ -11,14 +11,14 @@ import (
 )
 
 func PhotoHandlerCreate(ctx *fiber.Ctx) error {
-	book := new(request.PhotoCreateRequest)
-	if err := ctx.BodyParser(book); err != nil {
+	photo := new(request.PhotoCreateRequest)
+	if err := ctx.BodyParser(photo); err != nil {
 		return err
 	}
 
 	//Validation Request
 	validate := validator.New()
-	errValidate := validate.Struct(book)
+	errValidate := validate.Struct(photo)
 	if errValidate != nil {
 		return ctx.Status(400).JSON(fiber.Map{
 			"message": "failed",
@@ -38,8 +38,8 @@ func PhotoHandlerCreate(ctx *fiber.Ctx) error {
 	filenameString := fmt.Sprintf("%v", fileName)
 
 	newBook := entity.Book{
-		Title:  book.Title,
-		Author: book.Author,
+		Title:  photo.Title,
+		Author: photo.Author,
 		Cover:  filenameString,
 	}
 
