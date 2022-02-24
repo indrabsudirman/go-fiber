@@ -59,6 +59,12 @@ func HandleMultipleFile(ctx *fiber.Ctx) error {
 		} else {
 			log.Println("nothing file to be upload")
 		}
+
+		if fileName != "" {
+			ctx.Locals("filename", fileName)
+		} else {
+			ctx.Locals("filename", nil)
+		}
 	}
 
 	return ctx.Next()
