@@ -46,11 +46,13 @@ func HandleMultipleFile(ctx *fiber.Ctx) error {
 
 	files := form.File["photos"]
 
+	var filenames []string
+
 	for i, file := range files {
 
 		var fileName string
 		if file != nil {
-			fileName = fmt.Sprintf("%s-%d", &file.Filename, i)
+			fileName = fmt.Sprintf("%d-%s", i, file.Filename)
 
 			errSaveFile := ctx.SaveFile(file, fmt.Sprintf(config.ProjectRootPath+"/public/images/%s", fileName))
 			if errSaveFile != nil {
@@ -61,11 +63,11 @@ func HandleMultipleFile(ctx *fiber.Ctx) error {
 		}
 
 		if fileName != "" {
-			ctx.Locals("filename", fileName)
-		} else {
-			ctx.Locals("filename", nil)
+			filenames = append(filenames, fileName)
 		}
 	}
+
+	ctx.Locals("filenames", filenames)
 
 	return ctx.Next()
 }

@@ -2,9 +2,8 @@ package handler
 
 import (
 	"fmt"
-	"go-fiber/database"
-	"go-fiber/model/entity"
 	"go-fiber/model/request"
+	"log"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -26,32 +25,36 @@ func PhotoHandlerCreate(ctx *fiber.Ctx) error {
 		})
 	}
 
-	// Validation required image
-	fileName := ctx.Locals("filename")
+	var filenameString string
 
-	if fileName == nil {
+	// Validation required image
+	filenames := ctx.Locals("filenames")
+
+	if filenames == nil {
 		return ctx.Status(422).JSON(fiber.Map{
 			"message": "image is required",
 		})
+	} else {
+		filenameString = fmt.Sprintf("%v", filenames)
 	}
 
-	filenameString := fmt.Sprintf("%v", fileName)
+	log.Println(filenameString)
 
-	newBook := entity.Book{
-		Title:  photo.Title,
-		Author: photo.Author,
-		Cover:  filenameString,
-	}
+	// newPhoto := entity.Photo{
+	// 	Image:  filenames,
+	// 	CategoryID: 1,
+	// }
 
-	errCreateBook := database.DB.Create(&newBook).Error
-	if errCreateBook != nil {
-		return ctx.Status(500).JSON(fiber.Map{
-			"message": "failed to store data",
-		})
-	}
+	// errCreatePhoto := database.DB.Create(&newPhoto).Error
+	// if errCreatePhoto != nil {
+	// 	log.Println("ada file yang gagal", errCreatePhoto)
+	// 	// return ctx.Status(500).JSON(fiber.Map{
+	// 	// 	"message": "failed to store data",
+	// 	})
+	// }
 
 	return ctx.JSON(fiber.Map{
 		"message": "success",
-		"data":    newBook,
+		// "data":    newPhoto,
 	})
 }
