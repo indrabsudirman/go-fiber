@@ -1,8 +1,10 @@
 package handler
 
 import (
-	"fmt"
+	"go-fiber/database"
+	"go-fiber/model/entity"
 	"go-fiber/model/request"
+	"go-fiber/utils"
 	"log"
 
 	"github.com/go-playground/validator/v10"
@@ -25,36 +27,65 @@ func PhotoHandlerCreate(ctx *fiber.Ctx) error {
 		})
 	}
 
-	var filenameString string
-
 	// Validation required image
 	filenames := ctx.Locals("filenames")
+	log.Println("filename = :", filenames)
 
 	if filenames == nil {
 		return ctx.Status(422).JSON(fiber.Map{
 			"message": "image is required",
 		})
 	} else {
-		filenameString = fmt.Sprintf("%v", filenames)
+
+		filenameData := filenames.([]string)
+		for _, filename := range filenameData {
+			newPhoto := entity.Photo{
+				Image:      filename,
+				CategoryID: photo.CategoryId,
+			}
+
+			errCreatePhoto := database.DB.Create(&newPhoto).Error
+			if errCreatePhoto != nil {
+				log.Println("some not saved properly", errCreatePhoto)
+			}
+		}
 	}
-
-	log.Println(filenameString)
-
-	// newPhoto := entity.Photo{
-	// 	Image:  filenames,
-	// 	CategoryID: 1,
-	// }
-
-	// errCreatePhoto := database.DB.Create(&newPhoto).Error
-	// if errCreatePhoto != nil {
-	// 	log.Println("ada file yang gagal", errCreatePhoto)
-	// 	// return ctx.Status(500).JSON(fiber.Map{
-	// 	// 	"message": "failed to store data",
-	// 	})
-	// }
 
 	return ctx.JSON(fiber.Map{
 		"message": "success",
-		// "data":    newPhoto,
 	})
+}
+
+func PhotoHandlerDelete(ctx *fiber.Ctx) error {
+	photoId := ctx.Params("id")
+
+	var photo entity.Photo
+
+	//Available photo in DB
+	err := database.DB.Debug().First(&photo, "id = ?", photoId).Error
+	if err != nil {
+		return ctx.Status(404).JSON(fiber.Map{
+			"message": "photo not found",
+		})
+	}
+
+	//delete files on public/images
+	errDeletePhoto := utils.HandleRemoveFile(photo.Image)
+	if errDeletePhoto != nil {
+		log.Println("failed to delete some photos")
+
+	}
+
+	//delete files on database
+	errDelete := database.DB.Debug().Delete(&photo).Error
+	if errDelete != nil {
+		return ctx.Status(500).JSON(fiber.Map{
+			"message": "internal server error",
+		})
+	}
+
+	return ctx.JSON(fiber.Map{
+		"message": "photo was deleted",
+	})
+
 }

@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"go-fiber/config"
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+const DefaultPathPublicImages = "./public/images/"
 
 func HandleSingleFile(ctx *fiber.Ctx) error {
 	//Handle File
@@ -70,4 +73,23 @@ func HandleMultipleFile(ctx *fiber.Ctx) error {
 	ctx.Locals("filenames", filenames)
 
 	return ctx.Next()
+}
+
+func HandleRemoveFile(filename string, path ...string) error {
+
+	if len(path) > 0 {
+		err := os.Remove(path[0] + filename)
+		if err != nil {
+			log.Println("failed to remove file", err)
+			return err
+		}
+	} else {
+		err := os.Remove(DefaultPathPublicImages + filename)
+		if err != nil {
+			log.Println("failed to remove file", err)
+			return err
+		}
+	}
+
+	return nil
 }
