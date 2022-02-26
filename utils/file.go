@@ -5,6 +5,7 @@ import (
 	"go-fiber/config"
 	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,8 +23,11 @@ func HandleSingleFile(ctx *fiber.Ctx) error {
 	var fileName *string
 	if file != nil {
 		fileName = &file.Filename
+		log.Println("path is ", filepath.Ext(*fileName))
+		extensionFile := filepath.Ext(*fileName)
+		newFileName := fmt.Sprintf("profile-1%s", extensionFile)
 
-		errSaveFile := ctx.SaveFile(file, fmt.Sprintf(config.ProjectRootPath+"/public/images/%s", *fileName))
+		errSaveFile := ctx.SaveFile(file, fmt.Sprintf(config.ProjectRootPath+"/public/images/%s", newFileName))
 		if errSaveFile != nil {
 			log.Println("Failed to store file : ", errSaveFile)
 		}
@@ -55,7 +59,8 @@ func HandleMultipleFile(ctx *fiber.Ctx) error {
 
 		var fileName string
 		if file != nil {
-			fileName = fmt.Sprintf("%d-%s", i, file.Filename)
+			extensionFile := filepath.Ext(file.Filename)
+			fileName = fmt.Sprintf("%d-%s%s", i, "image", extensionFile)
 
 			errSaveFile := ctx.SaveFile(file, fmt.Sprintf(config.ProjectRootPath+"/public/images/%s", fileName))
 			if errSaveFile != nil {
