@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"go-fiber/config"
 	"log"
+	"mime/multipart"
 	"os"
 	"path/filepath"
 
@@ -20,8 +22,20 @@ func HandleSingleFile(ctx *fiber.Ctx) error {
 	}
 
 	//Check if file already
+
 	var fileName *string
 	if file != nil {
+
+		// contentTypeFile := file.Header.Get("Content-Type")
+		// log.Println("Content - Type : ", contentTypeFile)
+		errCheckContentType := checkContentType(file, "image/png", "image/jpeg")
+
+		if errCheckContentType != nil {
+			return ctx.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+				"message": errCheckContentType.Error(),
+			})
+		}
+
 		fileName = &file.Filename
 		log.Println("path is ", filepath.Ext(*fileName))
 		extensionFile := filepath.Ext(*fileName)
@@ -30,7 +44,9 @@ func HandleSingleFile(ctx *fiber.Ctx) error {
 		errSaveFile := ctx.SaveFile(file, fmt.Sprintf(config.ProjectRootPath+"/public/images/%s", newFileName))
 		if errSaveFile != nil {
 			log.Println("Failed to store file : ", errSaveFile)
+
 		}
+
 	} else {
 		log.Println("nothing file to be upload")
 	}
@@ -97,4 +113,20 @@ func HandleRemoveFile(filename string, path ...string) error {
 	}
 
 	return nil
+}
+
+func checkContentType(file *multipart.FileHeader, contentTypes ...string) error {
+	if len(contentTypes) > 0 {
+		for _, contentType := range contentTypes {
+			contentTypeFile := file.Header.Get("Content-Type")
+			if contentTypeFile == contentType {
+				return nil
+			}
+
+		}
+		return errors.New("not allowed file type")
+	} else {
+		return errors.New("not found content type to be check")
+	}
+
 }
