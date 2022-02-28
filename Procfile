@@ -1,1 +1,1 @@
-web: learn-gofiber-gorm
+web: go-fiber
