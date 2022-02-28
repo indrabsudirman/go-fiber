@@ -12,6 +12,9 @@ import (
 func RouteInit(r *fiber.App) {
 
 	r.Static("/public", config.ProjectRootPath+"/public/asset")
+	r.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
 
 	r.Post("/login", handler.LoginHandler)
 
