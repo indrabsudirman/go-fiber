@@ -13,7 +13,7 @@ func RouteInit(r *fiber.App) {
 
 	r.Static("/public", config.ProjectRootPath+"/public/asset")
 	r.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
+		return c.SendString("Hello, World!" + "\n" + "Thank very much Joglo Dev")
 	})
 
 	r.Post("/login", handler.LoginHandler)
