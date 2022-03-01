@@ -96,3 +96,147 @@
     }
 ]
 ```
+## Get User By ID
+
+
+- Method : GET
+- Endpoint : `/user/{id}`
+- Header :
+    - Content-Type: application/json
+    - Accept: application/json 
+
+- Response :
+```json
+{
+    "data": {
+        "id": 1,
+        "name": "Indra Sudirman",
+        "email": "indrasudirman@gmail.com",
+        "address": "Tangerang Selatan",
+        "phone": "089636002345",
+        "created_at": "2022-03-01T07:46:36.124916Z",
+        "updated_at": "2022-03-01T07:46:36.124916Z"
+    },
+    "message": "success"
+}
+```
+
+## Update User
+
+
+- Method : PUT
+- Endpoint : `/user/{id}`
+- Header :
+    - Content-Type: application/json
+    - Accept: application/json
+- Body :
+
+```json
+{
+    
+    "name": "string",
+    "address": "string",
+    "phone": "string"
+}
+```
+- Response :
+```json
+{
+    {
+    "data": {
+        "id": 1,
+        "name": "Indra Sudirman",
+        "email": "indrasudirman@gmail.com",
+        "address": "Banjarnegara",
+        "phone": "089636002345",
+        "created_at": "2022-03-01T07:03:16.600610182Z",
+        "updated_at": "2022-03-01T09:13:43.896024538Z"
+    },
+    "message": "success"
+}
+}
+```
+
+## Delete User
+
+
+- Method : DELETE
+- Endpoint : `/user/{id}`
+- Header :
+    - Accept: application/json
+- Response :
+```json
+{
+    "message": "user was deleted"
+}
+```
+
+#### Learn How to POST and GET File.
+
+## Post Book ( Single File)
+
+
+- Method : POST
+- Endpoint : `/book`
+- Header :
+    - Content-Type: multipart/form-data
+    - Accept: image/png, image/jpg
+- Body :
+
+```
+Content-Disposition: form-data; 
+Content-Type: image/jpeg
+
+title="title";
+author="author";
+cover="cover.png"
+
+```
+- Response :
+```json
+{
+    "data": {
+        "id": 1,
+        "title": "Buku 1",
+        "author": "Indra Sudirman",
+        "cover": "cover.png",
+        "created_at": "2022-03-01T09:58:29.147330841Z",
+        "updated_at": "2022-03-01T09:58:29.147330841Z"
+    },
+    "message": "success"
+}
+```
+
+## Post Photos ( Multiple File)
+
+
+- Method : POST
+- Endpoint : `/gallery`
+- Header :
+    - Content-Type: multipart/form-data
+    - Accept: image/png, image/jpg
+- Body :
+
+```
+Content-Disposition: form-data; 
+Content-Type: image/jpeg
+
+category_id="1";
+photos="photo1.png";
+photos="photo2.png"
+
+```
+- Response :
+```json
+{
+    "data": {
+        "id": 1,
+        "title": "Buku 1",
+        "author": "Indra Sudirman",
+        "cover": "cover.png",
+        "created_at": "2022-03-01T09:58:29.147330841Z",
+        "updated_at": "2022-03-01T09:58:29.147330841Z"
+    },
+    "message": "success"
+}
+```
